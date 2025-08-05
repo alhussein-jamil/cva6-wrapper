@@ -7,10 +7,10 @@
 module CVA6CoreBlackbox
     #(
         parameter TRACEPORT_SZ = 0,
-        parameter XLEN = 0,
-        parameter RAS_ENTRIES = 0,
-        parameter BTB_ENTRIES = 0,
-        parameter BHT_ENTRIES = 0,
+        parameter XLEN = 64,
+        parameter RAS_ENTRIES = 2,
+        parameter BTB_ENTRIES = 32,
+        parameter BHT_ENTRIES = 128,
         parameter [63:0] EXEC_REG_CNT = 0,
         parameter [63:0] EXEC_REG_BASE_0 = 0,
         parameter [63:0] EXEC_REG_SZ_0 = 0,
@@ -35,7 +35,7 @@ module CVA6CoreBlackbox
         parameter [63:0] CACHE_REG_SZ_4 = 0,
         parameter [63:0] DEBUG_BASE = 0,
         parameter AXI_ADDRESS_WIDTH = 0,
-        parameter AXI_DATA_WIDTH = 0,
+        parameter AXI_DATA_WIDTH = 64,
         parameter AXI_USER_WIDTH = 0,
         parameter AXI_ID_WIDTH = 0,
         parameter PMP_ENTRIES = 0

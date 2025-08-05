@@ -43,68 +43,137 @@ module CVA6CoreBlackbox
         parameter AXI_STRB_WIDTH = AXI_DATA_WIDTH/8
      )
 (
-    input clk_i,
-    input rst_ni,
-    input [XLEN - 1:0] boot_addr_i,
-    input [`HARTID_LEN - 1:0] hart_id_i,
-    input [1:0] irq_i,
-    input ipi_i,
-    input time_irq_i,
-    input debug_req_i,
-    output [TRACEPORT_SZ-1:0] trace_o,
+    (* X_INTERFACE_PARAMETER = "FREQ_HZ FREQ_HZ, ASSOCIATED_RESET Reset" *)
+    (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLK CLK" *)
+    input Clk,
+    (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_HIGH" *)
+    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.RST Reset" *)
+    input Reset,
+    input [XLEN - 1:0] BootAddr,
+    input [`HARTID_LEN - 1:0] HartId,
+    input [1:0] Interrupt,
+    input Ipi,
+    input TimeIrq,
+    input DebugReq,
+    output [TRACEPORT_SZ-1:0] Trace,
 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWREADY" *)
     input  axi_resp_i_aw_ready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWVALID" *)
     output axi_req_o_aw_valid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWID" *)
     output [AXI_ID_WIDTH-1:0] axi_req_o_aw_bits_id,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWADDR" *)
     output [AXI_ADDRESS_WIDTH-1:0] axi_req_o_aw_bits_addr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWLEN" *)
     output [7:0] axi_req_o_aw_bits_len,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWSIZE" *)
     output [2:0] axi_req_o_aw_bits_size,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWBURST" *)
     output [1:0] axi_req_o_aw_bits_burst,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWLOCK" *)
     output axi_req_o_aw_bits_lock,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWCACHE" *)
     output [3:0] axi_req_o_aw_bits_cache,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWPROT" *)
     output [2:0] axi_req_o_aw_bits_prot,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWQOS" *)
     output [3:0] axi_req_o_aw_bits_qos,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWREGION" *)
     output [3:0] axi_req_o_aw_bits_region,
-    output [5:0] axi_req_o_aw_bits_atop,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI AWUSER" *)
     output [AXI_USER_WIDTH-1:0] axi_req_o_aw_bits_user,
 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI WREADY" *)
     input axi_resp_i_w_ready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI WVALID" *)
     output axi_req_o_w_valid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI WDATA" *)
     output [AXI_DATA_WIDTH-1:0] axi_req_o_w_bits_data,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI WSTRB" *)
     output [(AXI_DATA_WIDTH/8)-1:0] axi_req_o_w_bits_strb,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI WLAST" *)
     output axi_req_o_w_bits_last,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI WUSER" *)
     output [AXI_USER_WIDTH-1:0] axi_req_o_w_bits_user,
 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARREADY" *)
     input axi_resp_i_ar_ready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARVALID" *)
     output axi_req_o_ar_valid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARID" *)
     output [AXI_ID_WIDTH-1:0] axi_req_o_ar_bits_id,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARADDR" *)
     output [AXI_ADDRESS_WIDTH-1:0] axi_req_o_ar_bits_addr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARLEN" *)
     output [7:0] axi_req_o_ar_bits_len,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARSIZE" *)
     output [2:0] axi_req_o_ar_bits_size,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARBURST" *)
     output [1:0] axi_req_o_ar_bits_burst,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARLOCK" *)
     output axi_req_o_ar_bits_lock,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARCACHE" *)
     output [3:0] axi_req_o_ar_bits_cache,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARPROT" *)
     output [2:0] axi_req_o_ar_bits_prot,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARQOS" *)
     output [3:0] axi_req_o_ar_bits_qos,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARREGION" *)
     output [3:0] axi_req_o_ar_bits_region,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI ARUSER" *)
     output [AXI_USER_WIDTH-1:0] axi_req_o_ar_bits_user,
 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI BREADY" *)
     output axi_req_o_b_ready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI BVALID" *)
     input axi_resp_i_b_valid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI BID" *)
     input [AXI_ID_WIDTH-1:0] axi_resp_i_b_bits_id,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI BRESP" *)
     input [1:0] axi_resp_i_b_bits_resp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI BUSER" *)
     input [AXI_USER_WIDTH-1:0] axi_resp_i_b_bits_user,
 
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI RREADY" *)
     output axi_req_o_r_ready,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI RVALID" *)
     input axi_resp_i_r_valid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI RID" *)
     input [AXI_ID_WIDTH-1:0] axi_resp_i_r_bits_id,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI RDATA" *)
     input [AXI_DATA_WIDTH-1:0] axi_resp_i_r_bits_data,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI RRESP" *)
     input [1:0] axi_resp_i_r_bits_resp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI RLAST" *)
     input axi_resp_i_r_bits_last,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI RUSER" *)
     input [AXI_USER_WIDTH-1:0] axi_resp_i_r_bits_user
 );
 
-    localparam ariane_pkg::ariane_cfg_t CVA6SocCfg = '{
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME M_AXI, \
+    ID_WIDTH AXI_ID_WIDTH, \
+    ADDR_WIDTH AXI_ADDRESS_WIDTH, \
+    DATA_WIDTH AXI_DATA_WIDTH, \
+    AWUSER_WIDTH AXI_USER_WIDTH, \
+    ARUSER_WIDTH AXI_USER_WIDTH, \
+    WUSER_WIDTH AXI_USER_WIDTH, \
+    RUSER_WIDTH AXI_USER_WIDTH, \
+    BUSER_WIDTH AXI_USER_WIDTH, \
+    PROTOCOL AXI4, \
+    READ_WRITE_MODE READ_WRITE, \
+    HAS_BURST 1, \
+    HAS_LOCK 1, \
+    HAS_PROT 1, \
+    HAS_CACHE 1, \
+    HAS_REGION 1, \
+    HAS_QOS 1, \
+    HAS_WSTRB 1, \
+    HAS_BRESP 1, \
+    HAS_RRESP 1, \
+    FREQ_HZ FREQ_HZ" *)
+(* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 M_AXI CLK" *)
+localparam ariane_pkg::ariane_cfg_t CVA6SocCfg = '{
         RASDepth: RAS_ENTRIES,
         BTBEntries: BTB_ENTRIES,
         BHTEntries: BHT_ENTRIES,
@@ -138,14 +207,14 @@ module CVA6CoreBlackbox
         ariane #(
             .ArianeCfg ( CVA6SocCfg )
         ) i_ariane (
-            .clk_i,
-            .rst_ni,
-            .boot_addr_i,
-            .hart_id_i,
-            .irq_i,
-            .ipi_i,
-            .time_irq_i,
-            .debug_req_i,
+            .clk_i(Clk),
+            .rst_ni(~Reset),
+            .boot_addr_i(BootAddr),
+            .hart_id_i(HartId),
+            .irq_i(Interrupt),
+            .ipi_i(Ipi),
+            .time_irq_i(TimeIrq),
+            .debug_req_i(DebugReq),
             .trace_o ( tp_if ),
             .axi_req_o ( ariane_axi_req ),
             .axi_resp_i ( ariane_axi_resp )
@@ -154,14 +223,14 @@ module CVA6CoreBlackbox
         ariane #(
             .ArianeCfg ( CVA6SocCfg )
         ) i_ariane (
-            .clk_i,
-            .rst_ni,
-            .boot_addr_i,
-            .hart_id_i,
-            .irq_i,
-            .ipi_i,
-            .time_irq_i,
-            .debug_req_i,
+            .clk_i(Clk),
+            .rst_ni(~Reset),
+            .boot_addr_i(BootAddr),
+            .hart_id_i(HartId),
+            .irq_i(Interrupt),
+            .ipi_i(Ipi),
+            .time_irq_i(TimeIrq),
+            .debug_req_i(DebugReq),
             .axi_req_o ( ariane_axi_req ),
             .axi_resp_i ( ariane_axi_resp )
         );
@@ -170,7 +239,7 @@ module CVA6CoreBlackbox
     `ifdef FIRESIM_TRACE
         // roll all trace signals into a single bit array (and pack according to rocket-chip)
         for (genvar i = 0; i < ariane_pkg::NR_COMMIT_PORTS; ++i) begin : gen_tp_roll
-            assign trace_o[(TRACEPORT_SZ*(i+1)/ariane_pkg::NR_COMMIT_PORTS)-1:(TRACEPORT_SZ*i/ariane_pkg::NR_COMMIT_PORTS)] = {
+            assign Trace[(TRACEPORT_SZ*(i+1)/ariane_pkg::NR_COMMIT_PORTS)-1:(TRACEPORT_SZ*i/ariane_pkg::NR_COMMIT_PORTS)] = {
                 tp_if[i].tval[39:0],
                 tp_if[i].cause[7:0],
                 tp_if[i].interrupt,
@@ -185,7 +254,7 @@ module CVA6CoreBlackbox
         end
     `else
         // set all the trace signals to 0
-        assign trace_o = '0;
+        assign Trace = '0;
     `endif
 
     AXI_BUS #(
@@ -218,8 +287,8 @@ module CVA6CoreBlackbox
         .AXI_MAX_WRITE_TXNS (1),
         .RISCV_WORD_WIDTH(XLEN)
     ) i_axi_riscv_atomics (
-        .clk_i,
-        .rst_ni,
+        .clk_i(Clk),
+        .rst_ni(~Reset),
         .slv(axi_slave_bus),
         .mst(axi_master_bus)
     );
@@ -237,7 +306,6 @@ module CVA6CoreBlackbox
     assign axi_req_o_aw_bits_prot = axi_master_bus.aw_prot;
     assign axi_req_o_aw_bits_qos = axi_master_bus.aw_qos;
     assign axi_req_o_aw_bits_region = axi_master_bus.aw_region;
-    assign axi_req_o_aw_bits_atop = axi_master_bus.aw_atop;
     assign axi_req_o_aw_bits_user = axi_master_bus.aw_user;
 
     assign axi_master_bus.w_ready = axi_resp_i_w_ready;

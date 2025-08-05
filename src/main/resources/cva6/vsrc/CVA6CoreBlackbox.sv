@@ -6,6 +6,7 @@
 
 module CVA6CoreBlackbox
     #(
+        parameter integer FREQ_HZ = 100000000,  // Default 100 MHz
         parameter TRACEPORT_SZ = 0,
         parameter XLEN = 64,
         parameter RAS_ENTRIES = 2,
@@ -38,7 +39,8 @@ module CVA6CoreBlackbox
         parameter AXI_DATA_WIDTH = 64,
         parameter AXI_USER_WIDTH = 0,
         parameter AXI_ID_WIDTH = 0,
-        parameter PMP_ENTRIES = 0
+        parameter PMP_ENTRIES = 0,
+        parameter AXI_STRB_WIDTH = AXI_DATA_WIDTH/8
      )
 (
     input clk_i,
@@ -274,3 +276,58 @@ module CVA6CoreBlackbox
     assign axi_master_bus.r_user = axi_resp_i_r_bits_user;
 
 endmodule
+
+// existing aribtration interface
+interface AXI_ARBITRATION
+(
+  input wire clk,
+  input wire rst_n
+);
+
+  // Forward path
+  logic [1:0]atop_req;
+  logic [1:0]atop_gnt;
+
+  // Backward path
+  logic       req_gnt;
+
+  modport master (
+    output atop_req,
+    input atop_gnt,
+    output req_gnt
+  );
+
+  modport slave (
+    input atop_req,
+    output atop_gnt,
+    input req_gnt
+  );
+
+endinterface
+
+// AXI routing information
+interface AXI_ROUTING_RULES
+(
+  input wire clk,
+  input wire rst_n
+);
+
+  // typedef struct packed {
+  //   logic [63:0] start_addr;
+  //   logic [63:0] end_addr;
+  // } xbar_rules_t;
+
+  // xbar_rules_t [1:0] rules;
+  logic [127:0] rules;
+
+  modport master (
+    // output xbar_rules_t rules
+    output rules
+  );
+
+  modport slave (
+    // input xbar_rules_t rules
+    input rules
+  );
+
+endinterface

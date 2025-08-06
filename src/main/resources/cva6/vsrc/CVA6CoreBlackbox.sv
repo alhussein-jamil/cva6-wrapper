@@ -1,3 +1,7 @@
+`define WT_DCACHE
+`define DISABLE_TRACER
+`define SRAM_NO_INIT
+
 // ******************************************************************
 // Wrapper for the CVA6 Core
 // ******************************************************************
@@ -35,7 +39,7 @@ module CVA6CoreBlackbox
         parameter [63:0] CACHE_REG_BASE_4 = 0,
         parameter [63:0] CACHE_REG_SZ_4 = 0,
         parameter [63:0] DEBUG_BASE = 0,
-        parameter AXI_ADDRESS_WIDTH = 0,
+        parameter AXI_ADDRESS_WIDTH = 64,
         parameter AXI_DATA_WIDTH = 64,
         parameter AXI_USER_WIDTH = 0,
         parameter AXI_ID_WIDTH = 0,
@@ -43,7 +47,7 @@ module CVA6CoreBlackbox
         parameter AXI_STRB_WIDTH = AXI_DATA_WIDTH/8
      )
 (
-    (* X_INTERFACE_PARAMETER = "FREQ_HZ FREQ_HZ, ASSOCIATED_RESET Reset" *)
+    (* X_INTERFACE_PARAMETER = "FREQ_HZ FREQ_HZ, ASSOCIATED_RESET Reset, ASSOCIATED_BUSIF M_AXI" *)
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLK CLK" *)
     input Clk,
     (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_HIGH" *)
@@ -155,11 +159,11 @@ module CVA6CoreBlackbox
     ID_WIDTH AXI_ID_WIDTH, \
     ADDR_WIDTH AXI_ADDRESS_WIDTH, \
     DATA_WIDTH AXI_DATA_WIDTH, \
-    AWUSER_WIDTH AXI_USER_WIDTH, \
-    ARUSER_WIDTH AXI_USER_WIDTH, \
-    WUSER_WIDTH AXI_USER_WIDTH, \
-    RUSER_WIDTH AXI_USER_WIDTH, \
-    BUSER_WIDTH AXI_USER_WIDTH, \
+    AWUSER_WIDTH 0, \
+    ARUSER_WIDTH 0, \
+    WUSER_WIDTH 0, \
+    RUSER_WIDTH 0, \
+    BUSER_WIDTH 0, \
     PROTOCOL AXI4, \
     READ_WRITE_MODE READ_WRITE, \
     HAS_BURST 1, \
@@ -203,7 +207,7 @@ localparam ariane_pkg::ariane_cfg_t CVA6SocCfg = '{
 
     `ifdef FIRESIM_TRACE
         traced_instr_pkg::trace_port_t tp_if;
-
+(* DONT_TOUCH = "TRUE", KEEP_HIERARCHY = "yes" *)
         ariane #(
             .ArianeCfg ( CVA6SocCfg )
         ) i_ariane (
